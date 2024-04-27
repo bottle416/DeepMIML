@@ -27,7 +27,7 @@ if __name__ == "__main__":
     bag_id = args.data
     miml_model_path = args.model
 
-    dataset = COCODataset("data/coco", "val", "2014")
+    dataset = COCODataset("data/coco", "val", "2017")
     cls_names = dataset.classes
     data_layer = COCODataLayer(dataset)
 

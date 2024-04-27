@@ -1,6 +1,6 @@
 import os.path as osp
 
-from cocodemo.coco_dataset import COCODataset
+from cocodemo.coco_dataset import TestCOCODataset
 from cocodemo.coco_data_layer import COCODataLayer
 
 

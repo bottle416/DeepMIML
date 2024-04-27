@@ -4,7 +4,7 @@ import numpy as np
 import sys
 sys.path.insert(0, "lib")
 
-from cocodemo import COCODataset, COCODataLayer
+from cocodemo import ALLCOCODataset, COCODataLayer
 from deepmiml.utils import load_keras_model, evaluate
 
 
@@ -26,7 +26,7 @@ if __name__ == "__main__":
     model.compile(optimizer="adadelta", loss="binary_crossentropy")
 
     # crate data layer
-    dataset = COCODataset("data/coco", "val", "2014")
+    dataset = ALLCOCODatasetCOCODataset("data/coco", "val", "2017")
     data_layer = COCODataLayer(dataset, batch_size=batch_size)
 
     print("Start Predicting...")

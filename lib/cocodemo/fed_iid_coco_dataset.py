@@ -6,15 +6,20 @@ import numpy as np
 from pycocotools.coco import COCO
 
 
-class TestCOCODataset(object):
+class COCODataset(object):
 
-    def __init__(self, data_dir, image_set, year):
-        self.name = 'coco_' + year + '_' + image_set
+    def __init__(self, data_dir, type, image_set, client_id):
+        '''self.name = 'coco_' + year + '_' + image_set
         # name, paths
         self.year = year
-        self.image_set = image_set
+       
+        '''
         self.data_dir = data_dir
-
+        self.type = type
+        self.image_set = image_set
+        self.client_id = client_id
+        self.data_name = "client_" + str(client_id)
+        
         # COCO API
         self.COCO = COCO(self._get_ann_file())
         cats = self.COCO.loadCats(self.COCO.getCatIds())
@@ -32,8 +37,7 @@ class TestCOCODataset(object):
         self.image_index = self._load_image_set_index()
         self.num_images = len(self.image_index)
 
-        coco_name = image_set + year  # e.g., "val2017"
-        self.data_name = coco_name
+        
 
     def _get_ann_file(self):
         """
@@ -45,14 +49,18 @@ class TestCOCODataset(object):
         """
         prefix = 'instances' if self.image_set.find('test') == -1 else 'image_info'
         return osp.join(self.data_dir, 'annotations',
-                        prefix + '_' + 'val2017' + '.json')
+                        prefix + '_' + 'train2017' + '.json')
 
     def _load_image_set_index(self):
-        """
-        Load image ids.
-        """
-        image_ids = self.COCO.getImgIds()
-        return image_ids
+        all_image_ids = self.COCO.getImgIds()
+        existing_image_ids = []
+        for image_id in all_image_ids:
+            image_info = self.COCO.loadImgs(image_id)
+            image_path = osp.join(self.data_dir, self.type, self.data_name, image_info[0]['file_name'])
+            if osp.exists(image_path):
+                existing_image_ids.append(image_id)
+        return existing_image_ids
+
 
     def image_at(self, i):
         im_path = self.image_path_at(i)
@@ -72,7 +80,7 @@ class TestCOCODataset(object):
         # Example image path for index=119993:
         #   train2014/COCO_train2014_000000119993.jpg
         image = self.COCO.loadImgs(index)[0]
-        image_path = osp.join(self.data_dir, self.data_name, image['file_name'])
+        image_path = osp.join(self.data_dir, self.type, self.data_name, image['file_name'])
         assert osp.exists(image_path), 'Path does not exist: {}'.format(image_path)
         return image_path
 
@@ -95,7 +103,7 @@ class TestCOCODataset(object):
 
 if __name__ == '__main__':
     import matplotlib.pyplot as plt
-    coco = TestCOCODataset('data/coco', 'train', '2017')
+    coco = COCODataset('data/coco', 'iid', 'train', '0')
     idx = 1
     print('Test index: ', idx)
     print('image path: ', coco.image_path_at(idx))
